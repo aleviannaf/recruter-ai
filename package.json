@@ -1,0 +1,41 @@
+{
+  "name": "recrutador-ia",
+  "version": "1.0.0",
+  "main": "dist/server.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsx watch src/shared/infra/http/server.ts",
+    "build": "tsc",
+    "start": "node dist/shared/infra/http/server.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.33.0",
+    "@mistralai/mistralai": "^1.10.0",
+    "@tavily/core": "^0.6.1",
+    "axios": "^1.13.2",
+    "cheerio": "^1.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.22.1",
+    "express-async-errors": "^3.1.1",
+    "multer": "^2.0.2",
+    "openai": "^6.10.0",
+    "pdf-parse": "^2.4.5",
+    "pdf-to-text": "^0.0.7",
+    "reflect-metadata": "^0.2.2",
+    "rss-parser": "^3.13.0",
+    "tsyringe": "^4.10.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^25.0.1",
+    "@types/pdf-parse": "^1.1.5",
+    "eslint": "^9.39.1",
+    "prettier": "^3.7.4",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
