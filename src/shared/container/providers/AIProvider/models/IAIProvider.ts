@@ -1,11 +1,4 @@
-export interface ISearchProfile {
-  keywords: string[];
-  seniority: string;
-  yearsOfExperience: number;
-  role: string;
-  languages: string[];
-  location: string;
-}
+import { ISearchResult } from '../../SearchProvider/models/ISearchProvider';
 
 export interface IJobMatch {
   jobTitle: string;
@@ -14,17 +7,13 @@ export interface IJobMatch {
   source: string;
   matchPercentage: number;
   reason: string;
+  salary: string;
+  isRemote: boolean;
 }
 
 export interface IAIProvider {
-  // Novos métodos (Modo Headhunter)
-  extractText(fileBuffer: Buffer): Promise<string>;
+  // Atualizado para receber o location (4º parâmetro)
+  generateSearchQuery(cvText: string, seniority?: string, onlyRemote?: boolean, location?: string): Promise<string>;
 
-  // 🚨 ATUALIZADO: Aceita senioridade (opcional) e dias (opcional)
-  findJobsDirectly(cvText: string, seniority?: string, daysAgo?: number): Promise<IJobMatch[]>;
-
-  // Métodos legados (mantidos para não quebrar contrato, se houver outras chamadas)
-  extractProfile(fileBuffer: Buffer): Promise<ISearchProfile>;
-  generateOptimalQuery(profile: ISearchProfile, targetSeniority: string): Promise<string>;
-  filterMatches(jobs: any[], profile: ISearchProfile, userSeniority?: string): Promise<IJobMatch[]>;
+  analyzeJobMatches(results: ISearchResult[], cvText: string, seniority?: string): Promise<IJobMatch[]>;
 }
