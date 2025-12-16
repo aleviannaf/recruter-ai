@@ -1,0 +1,87 @@
+paths:
+  /candidates/upload:
+    post:
+      summary: Upload de currículo (PDF)
+      tags: [Candidates]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                seniority:
+                  type: string
+                  enum: [Junior, Pleno, Senior]
+                daysAgo:
+                  type: integer
+                limit:
+                  type: integer
+      responses:
+        '200':
+          description: Análise do candidato e ranking de vagas
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas.yaml#/components/schemas/CandidateAnalysisResponse'
+  /jobs/search:
+    get:
+      summary: Buscar vagas por termos
+      tags: [Jobs]
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: daysAgo
+          schema:
+            type: integer
+        - in: query
+          name: seniority
+          schema:
+            type: string
+            enum: [Junior, Pleno, Senior]
+      responses:
+        '200':
+          description: Lista de vagas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '../components/schemas.yaml#/components/schemas/Job'
+  /recruiter/find-jobs:
+    post:
+      summary: Encontrar vagas a partir de um currículo
+      tags: [Recruiter]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                seniority:
+                  type: string
+                  enum: [Junior, Pleno, Senior]
+                daysAgo:
+                  type: integer
+                onlyRemote:
+                  type: boolean
+                location:
+                  type: string
+      responses:
+        '200':
+          description: Resultado consolidado com metadados e ranking de vagas
+          content:
+            application/json:
+              schema:
+                $ref: '../components/schemas.yaml#/components/schemas/RecruiterResponse'

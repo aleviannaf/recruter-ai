@@ -1,0 +1,64 @@
+components:
+  schemas:
+    Job:
+      type: object
+      properties:
+        jobTitle:
+          type: string
+        company:
+          type: string
+        link:
+          type: string
+          format: uri
+        source:
+          type: string
+        matchPercentage:
+          type: number
+          format: float
+        reason:
+          type: string
+        salary:
+          type: string
+        isRemote:
+          type: boolean
+    Metadata:
+      type: object
+      properties:
+        analyzed:
+          type: integer
+        approved:
+          type: integer
+        queryUsed:
+          type: string
+    RecruiterResponse:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
+        jobs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Job'
+    CandidateAnalysisResponse:
+      type: object
+      properties:
+        candidato:
+          type: object
+          properties:
+            cargo_detectado:
+              type: string
+            senioridade_alvo:
+              type: string
+            localizacao:
+              type: string
+        estatisticas:
+          type: object
+          properties:
+            vagas_encontradas_ia:
+              type: integer
+            vagas_aprovadas_ia:
+              type: integer
+        ranking_vagas:
+          type: array
+          items:
+            $ref: '#/components/schemas/Job'

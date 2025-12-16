@@ -1,0 +1,12 @@
+openapi: 3.0.3
+info:
+  title: Recrutador-IA API
+  version: 1.0.0
+  description: API para análise de currículos e busca de vagas
+servers:
+  - url: http://localhost:3333
+    description: Local Dev
+paths:
+  $ref: './paths/index.yaml'
+components:
+  $ref: './components/schemas.yaml'
