@@ -1,24 +1,19 @@
 # 🤖 Recrutador-IA
 
-> **O seu Headhunter Pessoal movido a Inteligência Artificial.**
+> **Seu Headhunter Pessoal movido a Inteligência Artificial.**
 
-O **Recrutador-IA** é uma API Backend robusta desenvolvida com **Node.js**, **TypeScript** e **Clean Architecture**. O objetivo é automatizar a busca de emprego: o sistema lê seu currículo (PDF), entende suas habilidades, busca vagas reais na internet (LinkedIn, Gupy, Greenhouse) e usa Inteligência Artificial para filtrar apenas as oportunidades que realmente dão "Match" com seu perfil.
+O **Recrutador-IA** é uma API Backend desenvolvida com **Node.js**, **TypeScript** e **Clean Architecture**. O sistema lê seu currículo (PDF), gera uma busca inteligente de vagas e usa IA para filtrar apenas as oportunidades com alto potencial de "Match".
 
 ---
 
 ## 🚀 Funcionalidades Principais
 
-- **📄 Leitura de Currículo (PDF):** Utiliza a biblioteca `pdf-extraction` para converter arquivos PDF em texto bruto.
-- **🧠 Extração de Perfil (AI):** O **Google Gemini** analisa o texto e extrai:
-  - Cargo Sugerido (Role)
-  - Senioridade (Junior/Pleno/Senior)
-  - Tech Stack (Keywords)
-  - Localização e Idiomas
-- **🔎 Busca "Premium" (Google Dorking):** Ao invés de feeds limitados, utilizamos a API do Google para buscar vagas diretamente no **LinkedIn**, **Gupy**, **Programathor** e **Greenhouse** em tempo real.
-- **🎯 Match Inteligente (AI Filter):** A IA lê a descrição de cada vaga encontrada e dá uma nota (0-100%) de compatibilidade, aplicando filtros de:
-  - **Domínio:** (Backend não recebe vaga de Frontend).
-  - **Geolocalização:** (Filtra vagas que não aceitam BR/LatAm).
-  - **Senioridade:** (Junior não recebe vaga Sênior/Lead).
+- **📄 Leitura de Currículo (PDF):** Extrai texto do PDF em memória para análise.
+- **🧠 IA (Mistral):**
+  - Gera queries Boolean para busca com frescor (usa `after:YYYY-MM-DD`).
+  - Analisa cada vaga encontrada e atribui um percentual de compatibilidade.
+- **🔎 Busca de Vagas (Tavily):** Faz busca avançada na web (LinkedIn, Gupy, Programathor, etc.) com filtro por recência.
+- **🎯 Ranking de Vagas:** Retorna lista de oportunidades com `matchPercentage`, motivo e indicação se é remoto.
 
 ---
 
@@ -27,9 +22,9 @@ O **Recrutador-IA** é uma API Backend robusta desenvolvida com **Node.js**, **T
 - **Linguagem:** TypeScript
 - **Runtime:** Node.js (v18+)
 - **Web Framework:** Express
-- **AI Model:** Google Gemini 1.5 Flash Lite (`gemini-flash-lite-latest`)
-- **Search Engine:** Google Custom Search API
-- **Design Patterns:** Clean Architecture, DDD, Strategy Pattern.
+- **IA:** Mistral (`mistral-small`)
+- **Busca:** Tavily Web Search API
+- **Arquitetura:** Clean Architecture, DDD, Strategy Pattern.
 
 ---
 
@@ -37,24 +32,23 @@ O **Recrutador-IA** é uma API Backend robusta desenvolvida com **Node.js**, **T
 
 ```text
 src/
-├── config/                  # Configurações externas
-├── modules/                 # 📦 MÓDULOS DE NEGÓCIO (DDD)
-│   └── candidates/          # Contexto de Candidatos
-│       ├── dtos/            # Interfaces de Entrada
-│       ├── infra/           # Camada Web (Controllers)
-│       └── useCases/        # ❤️ Regra de Negócio (Fluxo Principal)
+├── config/                  # Configuração de ambiente (dotenv + zod)
+├── modules/                 # 📦 Módulos de negócio (DDD)
+│   └── recruiter/           # Contexto de Recrutamento
+│       ├── infra/           # Camada Web (Controllers, Rotas)
+│       └── useCases/        # Fluxos de aplicação (FindJobs)
 │
-├── shared/                  # 🔧 FERRAMENTAS
-│   ├── container/           # Injeção de Dependência
-│   └── infra/               # Configuração do Server
-│       └── providers/       # Plugins Externos
-│           ├── AIProvider/  # Google Gemini
-│           └── JobProvider/ # Google Custom Search
+├── shared/                  # 🔧 Infra compartilhada
+│   ├── container/           # Injeção de dependências (tsyringe)
+│   └── infra/               # App/Server e Providers
+│       └── providers/
+│           ├── AIProvider/      # MistralProvider
+│           └── SearchProvider/  # TavilySearchProvider
 
 
 # 🧠 Recrutador IA --- Análise Inteligente de Currículos
 
-Projeto que utiliza **IA (Gemini)** + **Busca Google** para analisar
+Projeto que utiliza **IA (Mistral)** + **Busca Tavily** para analisar
 currículos, buscar vagas relevantes automaticamente e gerar um ranking
 inteligente com base no perfil do candidato.
 
@@ -62,19 +56,15 @@ inteligente com base no perfil do candidato.
 
 ### 1. Pré-requisitos
 
--   **Node.js v18+**
--   **Gemini API Key** --- Obtenha em:
-    https://aistudio.google.com/app/apikey\
--   **Google Search API Key** --- Ative a *Custom Search API* no Google
-    Cloud Console\
--   **Search Engine ID (CX)** --- Configure um buscador em *Programmable
-    Search Engine* com: **Pesquisar em toda a web**
+- **Node.js v18+**
+- **Mistral API Key** — Obtenha em https://console.mistral.ai/
+- **Tavily API Key** — Obtenha em https://tavily.com/
 
 ### 2. Instalação
 
 ``` bash
-git clone https://github.com/seu-usuario/recrutador-ia.git
-cd recrutador-ia
+git clone https://github.com/aleviannaf/recruter-ai.git
+cd recruter-ai
 npm install
 ```
 
@@ -83,14 +73,14 @@ npm install
 Crie um arquivo `.env` na raiz do projeto:
 
 ``` env
+NODE_ENV=dev
 PORT=3333
 
-# Chave da IA (Cérebro)
-GEMINI_API_KEY=Cole_Sua_Chave_Gemini_Aqui
+# IA: Mistral
+MISTRAL_API_KEY=Sua_Chave_Mistral_Aqui
 
-# Chaves de Busca (Olhos)
-GOOGLE_SEARCH_API_KEY=Cole_Sua_Chave_Cloud_Aqui
-GOOGLE_SEARCH_ENGINE_ID=Cole_Seu_CX_ID_Aqui
+# Busca: Tavily
+TAVILY_API_KEY=Sua_Chave_Tavily_Aqui
 ```
 
 ### 4. Rodar o Projeto
@@ -101,40 +91,37 @@ npm run dev
 
 ## 🔌 Documentação da API
 
-### Analisar Candidato --- POST /candidates/analyze
+### Encontrar Vagas — POST /recruiter/find-jobs
 
 Formato: **Multipart Form-Data**
 
 ### Parâmetros
 
-  Campo       Obrigatório   Descrição
-  ----------- ------------- --------------------------------------
-  file        ✅            Arquivo PDF do currículo
-  limit       ❌            Máx. de vagas retornadas (padrão 10)
-  daysAgo     ❌            Vagas dos últimos X dias (padrão 30)
-  seniority   ❌            Força uma senioridade (ex: "Junior")
+  - `file` (obrigatório): arquivo PDF do currículo
+  - `seniority` (opcional): força uma senioridade (`Junior`, `Pleno`, `Senior`)
+  - `daysAgo` (opcional): filtra vagas dos últimos X dias (padrão 7)
+  - `onlyRemote` (opcional): `true`/`false` para priorizar vagas remotas
+  - `location` (opcional): cidade/estado para direcionar a busca (ex.: `Manaus`)
 
 ### Exemplo de Resposta
 
 ``` json
 {
-  "candidato": {
-    "cargo_detectado": "Desenvolvedor Backend",
-    "senioridade_alvo": "Junior",
-    "localizacao": "Brazil"
+  "metadata": {
+    "analyzed": 10,
+    "approved": 3,
+    "queryUsed": "Vaga (Node OR Node.js) Pleno Brasil after:2025-12-12"
   },
-  "estatisticas": {
-    "vagas_encontradas_google": 10,
-    "vagas_aprovadas_ia": 2
-  },
-  "ranking_vagas": [
+  "jobs": [
     {
       "jobTitle": "Backend Developer Node.js",
       "company": "Tech Start",
       "link": "https://www.linkedin.com/jobs/view/...",
       "source": "LinkedIn",
-      "matchPercentage": 95,
-      "reason": "Vaga Junior, Remota, Stack Node+AWS compatível."
+      "matchPercentage": 92,
+      "reason": "Stack Node + AWS. Vaga Pleno. Remoto para BR.",
+      "salary": "Não informado",
+      "isRemote": true
     }
   ]
 }
